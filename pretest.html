@@ -167,7 +167,7 @@ body{background:linear-gradient(180deg,#aee8ff 0,#eefaff 42%,#fff8de 100%)}
     </div>
     <div class="locationInstruction">
       <b>Speaking Mission — M.2</b><br>
-      Speak the route in <strong>3–4 short, clear direction sentences</strong>.
+      Speak the route in <strong>2–4 short, clear sentences</strong>.
       Use landmarks to make the listener reach the target, then <strong>name the destination</strong>.
       <div class="focusPill">Meaning and the real route are checked — not one memorized sentence.</div>
     </div>
@@ -183,7 +183,7 @@ body{background:linear-gradient(180deg,#aee8ff 0,#eefaff 42%,#fff8de 100%)}
     <div class="routeGoalBox">
       <b>Recommended speaking pattern</b>
       <div class="routeSteps">
-        <span>1 Go straight</span><span>2 Go past...</span><span>3 Turn left/right at...</span><span>4 Name the destination</span>
+        <span>1 Go straight</span><span>2 Turn / Go past...</span><span>3 Continue if needed</span><span>4 Name the destination</span>
       </div>
     </div>
 
@@ -263,7 +263,7 @@ const MODE="pre";
 const TEST_LABEL="Pre-test";
 const HISTORY_KEY="giving_direction_pretest_records_v1";
 const STUDENT_KEY="giving_direction_shared_student_v1";
-const TEST_MISSIONS=[{"from":"bookstore","to":"hotel","path":["bookstore","cafe","park","postoffice","supermarket","hotel"],"relation":{"type":"next_to","refs":["library"]}},{"from":"school","to":"temple","path":["school","park","cafe","pharmacy","temple"],"relation":{"type":"opposite","refs":["hospital"]}},{"from":"busstop","to":"bank","path":["busstop","school","park","bank"],"relation":{"type":"opposite","refs":["pharmacy"]}},{"from":"library","to":"park","path":["library","hotel","supermarket","postoffice","park"],"relation":{"type":"near","refs":["school"]}},{"from":"postoffice","to":"pharmacy","path":["postoffice","park","cafe","pharmacy"],"relation":{"type":"next_to","refs":["cafe"]}},{"from":"hospital","to":"bookstore","path":["hospital","bank","park","school","bookstore"],"relation":{"type":"next_to","refs":["cafe"]}},{"from":"temple","to":"supermarket","path":["temple","pharmacy","bank","supermarket"],"relation":{"type":"near","refs":["postoffice"]}},{"from":"cafe","to":"library","path":["cafe","pharmacy","temple","hospital","library"],"relation":{"type":"next_to","refs":["hotel"]}},{"from":"hotel","to":"school","path":["hotel","supermarket","postoffice","busstop","school"],"relation":{"type":"near","refs":["park"]}},{"from":"pharmacy","to":"busstop","path":["pharmacy","cafe","bookstore","school","busstop"],"relation":{"type":"near","refs":["postoffice"]}}];
+const TEST_MISSIONS=[{"from":"busstop","to":"school","path":["busstop","school"]},{"from":"school","to":"cafe","path":["school","park","cafe"]},{"from":"bookstore","to":"pharmacy","path":["bookstore","cafe","pharmacy"]},{"from":"bank","to":"hotel","path":["bank","supermarket","hotel"]},{"from":"temple","to":"library","path":["temple","hospital","library"]},{"from":"school","to":"pharmacy","path":["school","park","cafe","pharmacy"]},{"from":"cafe","to":"bank","path":["cafe","park","bank"]},{"from":"pharmacy","to":"library","path":["pharmacy","temple","hospital","library"]},{"from":"hotel","to":"park","path":["hotel","supermarket","postoffice","park"]},{"from":"library","to":"bank","path":["library","hospital","bank"]}];
 let ACTIVE_MISSIONS=[];
 function stableHash(text){
  let h=2166136261>>>0;
@@ -495,10 +495,9 @@ function evaluateMeaning(text){
  const destinationOK=mentionsPlace(s,mission.to);
  const routeOK=samePath(state.path,mission.path);
  const instructionCount=routeInstructionCount(s);
- const enoughInstructions=instructionCount>=3;
- const understandable=s.split(/\s+/).filter(Boolean).length>=6&&instructionCount>0;
- // Location words such as next to / near / opposite / between are accepted,
- // but they are NOT required for a correct answer.
+ // Routes are intentionally short: 1–3 movement instructions + destination = 2–4 sentences.
+ const enoughInstructions=instructionCount>=1;
+ const understandable=s.split(/\s+/).filter(Boolean).length>=5&&instructionCount>0;
  const optionalLocationOK=destinationPresentationOK(s,mission.to);
  return{
   correct:understandable&&destinationOK&&routeOK&&enoughInstructions,
@@ -840,10 +839,10 @@ function showCorrectMark(){
 }
 
 function feedbackFor(ev){
- if(!ev.understandable)return"Try again. Use short, clear direction sentences.";
- if(!ev.enoughInstructions)return"Give at least 3 clear direction steps.";
- if(!ev.routeOK)return"Check the route, turns, and landmarks. The person must really reach the target.";
- if(!ev.destinationOK)return"Remember to name the destination at the end.";
+ if(!ev.understandable)return"Try again. Use 2–4 short, clear sentences.";
+ if(!ev.enoughInstructions)return"Give a clear direction first.";
+ if(!ev.routeOK)return"Check the direction and landmark so the person reaches the target.";
+ if(!ev.destinationOK)return"Remember to name the destination.";
  return"Try the route again.";
 }
 function modelAnswer(){
@@ -859,7 +858,11 @@ function modelAnswer(){
 }
 function askText(){
  const d=places[mission.to].name;
- const forms=[`Excuse me, how can I get to the ${d}?`,`Excuse me, where is the ${d}?`,`Excuse me, could you help me? I'm looking for the ${d}.`];
+ const forms=[
+  `Excuse me, how can I get to the ${d}?`,
+  `Excuse me, could you tell me how to get to the ${d}?`,
+  `Excuse me, which way is the ${d}?`
+ ];
  return forms[questionIndex%forms.length];
 }
 function speakText(text){
@@ -891,7 +894,7 @@ function beginQuestion(){
  currentAttempts=0;currentFirstAttemptScored=false;
  $("qno").textContent=questionIndex+1;$("roundBadge").textContent=`Question ${questionIndex+1}/10`;$("destination").textContent=places[mission.to].name;
  $("question").textContent=askText();$("status").className="status info";
- $("status").textContent=MODE==="pre"?"Give at least 3 clear direction steps and name the destination. Give your best answer once.":"Give at least 3 clear direction steps, use helpful landmarks, and name the destination. Keep trying until the route is correct.";
+ $("status").textContent=MODE==="pre"?"Give simple directions in 2–4 sentences and name the destination. Give your best answer once.":"Give simple directions in 2–4 sentences, use a helpful landmark when needed, and name the destination. Keep trying until the route is correct.";
  $("feedback").className="feedback";$("feedback").textContent="";updateTranscript("—");
  $("replay").disabled=false;$("recordBtn").disabled=!recognition;$("sendBtn").disabled=true;$("recordAgainBtn").disabled=true;$("next").disabled=true;
  idleRecordingUI();renderMap();clearLiveMovement();updateProgress();speakText($("question").textContent);
