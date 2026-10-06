@@ -8,7 +8,7 @@
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;background:#f4f9fd;color:var(--ink)}
 .wrap{max-width:1280px;margin:auto;padding:16px}.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 h1{color:#1456bd;margin:0}.nav{display:flex;gap:7px;flex-wrap:wrap}.nav a,.btn{border:0;border-radius:12px;padding:9px 12px;font-weight:850;text-decoration:none;cursor:pointer}
-.nav a{background:#fff;color:#1456bd;border:1px solid var(--line)}.btn{background:#1769d2;color:#fff}.btn.green{background:#158356}.btn.gray{background:#52677b}
+.nav a{background:#fff;color:#1456bd;border:1px solid var(--line)}.btn{background:#1769d2;color:#fff}.btn.green{background:#158356}.btn.gray{background:#52677b}.btn.red{background:#c93636}.btn.red:disabled{opacity:.55;cursor:not-allowed}
 .card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:12px}.login{max-width:520px;margin:28px auto;text-align:center}
 input,select{border:1px solid #c9dce8;border-radius:11px;padding:10px;font:inherit}.login input{width:min(330px,100%);margin:8px}
 .status{padding:10px 12px;border:1px solid #bfd9ef;background:#eef7ff;border-radius:12px;margin:10px 0;font-weight:750}.bad{color:#a82c2c}.good{color:#0b7745}
@@ -33,7 +33,7 @@ input,select{border:1px solid #c9dce8;border-radius:11px;padding:10px;font:inher
 
 <div id="app" class="hidden">
 <div id="status" class="status">กำลังโหลดข้อมูล...</div>
-<div class="actions"><button id="exportBtn" class="btn green">📗 Export Excel</button><button id="reloadBtn" class="btn">↻ Reload</button><button id="logoutBtn" class="btn gray">ออกจาก Dashboard</button></div>
+<div class="actions"><button id="exportBtn" class="btn green">📗 Export Excel</button><button id="reloadBtn" class="btn">↻ Reload</button><button id="clearBtn" class="btn red">🗑 ล้างข้อมูลนักเรียนทั้งหมด</button><button id="logoutBtn" class="btn gray">ออกจาก Dashboard</button></div>
 <div class="stats">
 <div class="stat"><small>Students</small><b id="studentCount">0</b></div>
 <div class="stat"><small>Pre Avg.</small><b id="preAvg">0/10</b></div>
@@ -97,12 +97,52 @@ async function login(){
  try{await call("verify");sessionStorage.setItem("teacherCode",code);$("loginCard").classList.add("hidden");$("app").classList.remove("hidden");load();}
  catch(e){$("loginStatus").classList.remove("hidden");$("loginStatus").textContent="รหัสไม่ถูกต้องหรือ Edge Function ยังไม่ได้ Deploy"}
 }
+async function clearAllStudentData(){
+ const first=confirm(
+  "ต้องการล้างข้อมูลนักเรียนทั้งหมดหรือไม่?\n\n"+
+  "ข้อมูลที่จะถูกลบ:\n"+
+  "• คะแนน Pre/Post\n"+
+  "• Speech Attempts และ Transcript\n"+
+  "• ไฟล์เสียงทั้งหมดใน student-audio\n\n"+
+  "การลบนี้ย้อนกลับไม่ได้"
+ );
+ if(!first)return;
+
+ const typed=prompt('เพื่อยืนยันอีกครั้ง กรุณาพิมพ์คำว่า DELETE');
+ if(typed!=="DELETE"){
+   alert("ยกเลิกการล้างข้อมูล");
+   return;
+ }
+
+ const btn=$("clearBtn");
+ btn.disabled=true;
+ const old=btn.textContent;
+ btn.textContent="กำลังล้างข้อมูล...";
+ $("status").textContent="⏳ กำลังลบข้อมูลนักเรียนและไฟล์เสียง กรุณารอสักครู่...";
+
+ try{
+   const j=await call("clear-data",{confirm:"DELETE"});
+   submissions=[];attempts=[];summary=[];
+   render();
+   $("status").textContent=
+     `✅ ล้างข้อมูลเรียบร้อย: ${j.deletedSubmissions||0} ผลทดสอบ • `+
+     `${j.deletedAttempts||0} speech attempts • ${j.deletedAudio||0} ไฟล์เสียง`;
+   alert("ล้างข้อมูลนักเรียนทั้งหมดเรียบร้อยแล้ว");
+ }catch(e){
+   $("status").textContent="❌ ล้างข้อมูลไม่สำเร็จ: "+e.message;
+   alert("ล้างข้อมูลไม่สำเร็จ\n"+e.message);
+ }finally{
+   btn.disabled=false;
+   btn.textContent=old;
+ }
+}
+
 function exportXlsx(){
  const s=summary.map(x=>({"เลขที่":x.no,"ชื่อ":x.name,"ชั้น":x.cls,"Pre":x.pre?.score??"","Post":x.post?.score??"","Gain":x.pre&&x.post?Number(x.post.score)-Number(x.pre.score):"","Attempts":x.post?.attempts??"","Hints":x.post?.hints??""}));
  const a=attempts.map(x=>({"เลขที่":x.student_no,"ชื่อ":x.student_name,"ชั้น":x.class_name,"Test":x.test_type,"ข้อ":x.question_no,"Attempt":x.attempt_no,"Correct":x.correct?"Yes":"No","Transcript":x.transcript,"Audio Path":x.audio_path||"","เวลา":x.created_at}));
  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(s),"Summary");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(a),"Speech Attempts");XLSX.writeFile(wb,"Giving_Direction_PA_Results.xlsx");
 }
-$("loginBtn").onclick=login;$("reloadBtn").onclick=load;$("logoutBtn").onclick=()=>{sessionStorage.removeItem("teacherCode");location.reload()};$("exportBtn").onclick=exportXlsx;$("search").oninput=renderAttempts;$("testFilter").onchange=renderAttempts;
+$("loginBtn").onclick=login;$("reloadBtn").onclick=load;$("clearBtn").onclick=clearAllStudentData;$("logoutBtn").onclick=()=>{sessionStorage.removeItem("teacherCode");location.reload()};$("exportBtn").onclick=exportXlsx;$("search").oninput=renderAttempts;$("testFilter").onchange=renderAttempts;
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));$("summaryPanel").classList.toggle("hidden",b.dataset.tab!=="summary");$("attemptPanel").classList.toggle("hidden",b.dataset.tab!=="attempts")});
 if(code){$("code").value=code;login()}
 </script></body></html>
