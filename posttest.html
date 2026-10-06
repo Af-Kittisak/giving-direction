@@ -1353,9 +1353,9 @@ window.supabaseSaveAttempt=async function(attempt,audioBlob){
     first_attempt:!!attempt.firstAttempt,
     audio_path:uploadedPath
   };
-  const {data,error}=await sb.from("speech_attempts").insert(payload).select("id").single();
+  const {error}=await sb.from("speech_attempts").insert(payload);
   if(error)throw error;
-  return {ok:true,id:data?.id,audioPath:uploadedPath};
+  return {ok:true,audioPath:uploadedPath};
  }catch(error){
   console.error("Supabase attempt save failed:",error);
   return {ok:false,error:error?.message||String(error),audioPath:uploadedPath};
@@ -1382,9 +1382,9 @@ window.supabaseSaveSubmission=async function(record){
     hints:totalHints,
     duration_seconds:Number(record.seconds||0)
   };
-  const {data,error}=await sb.from("submissions").insert(payload).select("id").single();
+  const {error}=await sb.from("submissions").insert(payload);
   if(error)throw error;
-  return {ok:true,id:data?.id};
+  return {ok:true};
  }catch(error){
   console.error("Supabase summary save failed:",error);
   return {ok:false,error:error?.message||String(error)};
