@@ -25,8 +25,8 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px;ma
 .card{background:rgba(255,255,255,.98);border:1px solid var(--line);border-radius:24px;padding:12px;box-shadow:0 12px 28px rgba(38,87,127,.11)}
 .progress{display:flex;gap:6px;margin-bottom:9px}.dot{height:10px;flex:1;border-radius:99px;background:#dbe6ee}.dot.current{background:var(--blue)}.dot.done{background:var(--green)}
 .mapCard{position:relative;overflow:hidden}.mapbox{position:relative;overflow:hidden;border-radius:20px;min-height:510px;background:linear-gradient(180deg,#a6dfff 0,#dff5ff 37%,#b7e19d 37.5%,#9cd183 100%);border:2px solid #b9d9eb}
-#map svg{display:block;width:100%;height:auto}.walker{position:absolute;transform:translate(-50%,-92%);font-size:34px;z-index:30;filter:drop-shadow(0 4px 2px #0003);pointer-events:none;will-change:left,top,transform}.walker.step{transform:translate(-50%,-98%) scale(1.08)}.walker.walking{animation:walkerBob .34s ease-in-out infinite alternate}.walker.walking::after{content:""}.walker.arrived{transition:transform .18s ease}.facingArrow,.facingLabel{will-change:left,top,transform}@keyframes walkerBob{0%{transform:translate(-50%,-92%) rotate(-4deg) scale(1)}50%{transform:translate(-50%,-99%) rotate(0deg) scale(1.03)}100%{transform:translate(-50%,-92%) rotate(4deg) scale(1)}}
-.mapHelp{position:absolute;left:14px;bottom:14px;background:#ffffffdf;border:1px solid #d3e0ea;border-radius:13px;padding:8px 10px;font-size:12px;font-weight:850;color:#4c6274;box-shadow:0 5px 15px #0001}
+#map svg{display:block;width:100%;height:auto}.walker{position:absolute;transform:translate(-50%,-92%);font-size:34px;z-index:30;filter:drop-shadow(0 4px 2px #0003);pointer-events:none;will-change:left,top,transform}.walker.step{transform:translate(-50%,-98%) scale(1.08)}.walker.walking{animation:walkerBob .34s ease-in-out infinite alternate}.walker.walking::after{content:""}.walker.arrived{transition:transform .18s ease}.facingArrow,@keyframes walkerBob{0%{transform:translate(-50%,-92%) rotate(-4deg) scale(1)}50%{transform:translate(-50%,-99%) rotate(0deg) scale(1.03)}100%{transform:translate(-50%,-92%) rotate(4deg) scale(1)}}
+
 .side{display:flex;flex-direction:column;gap:10px}.studentBar{display:flex;gap:7px;flex-wrap:wrap;align-items:center}.studentTag{background:#edf7ff;border:1px solid #c5deef;border-radius:11px;padding:7px 9px;font-size:12px;font-weight:850}
 .missionBox{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:linear-gradient(135deg,#fff9df,#fff);border:1px solid #eed87b;border-radius:16px;padding:11px 12px}.missionBox .label{font-size:11px;color:#7d6720;font-weight:900;letter-spacing:1px;text-transform:uppercase}.missionBox strong{font-size:22px}.badge{background:#fff;border:1px solid #ecd471;border-radius:13px;padding:8px 10px;font-weight:900}
 .personCard{display:grid;grid-template-columns:64px 1fr;gap:10px}.avatar{width:64px;height:72px;border-radius:21px;background:linear-gradient(145deg,#fff,#dceeff);display:grid;place-items:center;font-size:40px;border:1px solid #c7dff2;box-shadow:inset -7px -7px 12px #8cbae733,0 6px 13px #1e5d9620}.person{font-size:13px;color:#1456bd;font-weight:950;margin-bottom:5px}
@@ -43,13 +43,6 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px;ma
 .formGrid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px}.field label{display:block;font-size:11px;color:#647b8e;font-weight:900;margin:0 0 4px 2px}.field input{width:100%;border:1px solid #c7dbe9;border-radius:12px;padding:10px 11px;background:#fbfdff;outline:none}
 .dashboardStats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}.tableWrap{overflow:auto;border:1px solid #d9e5ee;border-radius:14px}table{width:100%;border-collapse:collapse;font-size:12px;min-width:820px}th,td{padding:8px 9px;border-bottom:1px solid #e4edf3;text-align:left;white-space:nowrap}th{background:#f3f8fc;color:#4b6479;position:sticky;top:0}.notice{font-size:12px;color:#657a8c;background:#f7fafc;border-radius:12px;padding:8px 10px;border:1px solid #e0e8ee}
 
-.positionPin{
-  position:absolute;z-index:24;transform:translate(-50%,-100%);
-  padding:5px 8px;border-radius:999px;font-size:10px;font-weight:950;letter-spacing:.5px;
-  white-space:nowrap;box-shadow:0 4px 10px #0002;border:2px solid #fff;pointer-events:none;
-}
-.startPin{background:#1769d2;color:#fff}
-.targetPin{background:#f59e0b;color:#fff}
 .destinationCheck{
   position:absolute;z-index:35;transform:translate(-50%,-50%);
   width:38px;height:38px;border-radius:50%;display:grid;place-items:center;
@@ -109,11 +102,6 @@ body{background:linear-gradient(180deg,#aee8ff 0,#eefaff 42%,#fff8de 100%)}
  pointer-events:none;transition:left .76s ease,top .76s ease,transform .22s ease;
  transform-origin:50% 50%;
 }
-.facingLabel{
- position:absolute;z-index:32;transform:translate(-50%,-50%);
- background:#fff;border:1px solid #ffc5b9;color:#b93622;border-radius:999px;
- padding:2px 5px;font-size:8px;font-weight:950;pointer-events:none;box-shadow:0 2px 6px #0002
-}
 .naturalGuide{margin-top:7px;padding:9px 10px;background:linear-gradient(135deg,#eef9ff,#fff6e8);border:1px solid #c9e1ef;border-radius:13px;font-size:11px;line-height:1.5}
 .naturalGuide b{color:#155da1}
 
@@ -139,8 +127,7 @@ body{background:linear-gradient(180deg,#aee8ff 0,#eefaff 42%,#fff8de 100%)}
   <section class="card mapCard">
     <div class="progress" id="progress"></div>
     <div class="mapbox" id="map"></div>
-    <div class="mapHelp">🚶 start · 🎯 destination · red arrow = the direction the person is facing · watch the character move point by point</div>
-  </section>
+</section>
 
   <section class="card side">
     <div class="studentBar">
@@ -150,7 +137,7 @@ body{background:linear-gradient(180deg,#aee8ff 0,#eefaff 42%,#fff8de 100%)}
     </div>
 
     <div class="missionBox">
-      <div><div class="label">Target place</div><strong id="destination">Press Start</strong><div class="focusPill">Use a location word at the end</div></div>
+      <div><div class="label">Target place</div><strong id="destination">Press Start</strong><div class="focusPill">Give clear directions to reach the place</div></div>
       <div class="badge" id="roundBadge">Question —</div>
     </div>
 
@@ -178,30 +165,25 @@ body{background:linear-gradient(180deg,#aee8ff 0,#eefaff 42%,#fff8de 100%)}
       <span class="chip">Turn left/right at the + place.</span>
       <span class="chip">Go past the + place.</span>
     </div>
-    <div class="relationshipGuide">
-      <div class="relCard rel-next"><b>next to</b>The cafe is next to the bookstore.</div>
-      <div class="relCard rel-near"><b>near</b>The school is near the park.</div>
-      <div class="relCard rel-opposite"><b>opposite</b>The bank is opposite the pharmacy.</div>
-      <div class="relCard rel-between"><b>between</b>The cafe is between the bookstore and the pharmacy.</div>
-    </div>
-
     <div class="locationInstruction">
       <b>Speaking Mission — M.2</b><br>
-      Speak the route in <strong>3–4 short sentences</strong>, mention the important landmarks,
-      then finish with <strong>next to</strong>, <strong>near</strong>, <strong>opposite</strong>, or <strong>between</strong>.
-      <div class="focusPill">Route first → final location sentence</div>
+      Speak the route in <strong>3–4 short, clear direction sentences</strong>.
+      Use landmarks to make the listener reach the target, then <strong>name the destination</strong>.
+      <div class="focusPill">Meaning and the real route are checked — not one memorized sentence.</div>
     </div>
+    <div class="naturalGuide"><b>Optional enrichment:</b> You may also use <i>next to, near, opposite, between</i> when the relationship is true on the map. These words are <b>not required</b> for a correct answer.</div>
+</div>
     <div class="naturalGuide"><b>Randomized test:</b> Questions 1–10 are shuffled separately for each student, and the order stays fixed during the test.</div>
     <div class="naturalGuide"><b>Natural English accepted:</b>
     go straight / straight ahead / keep going / continue • go past / pass •
     turn left/right • take/make a left/right • take the next/first/second left/right •
-    at the bank, turn right • when you reach the bank, turn right •
-    next to / beside / near / close to / opposite / across from / between.
+    at the bank, turn right • when you reach the bank, turn right.
+    Optional location language such as next to / near / opposite / between is also accepted when correct.
     The system checks the meaning and the real route, not one memorized sentence.</div>
     <div class="routeGoalBox">
       <b>Recommended speaking pattern</b>
       <div class="routeSteps">
-        <span>1 Go straight</span><span>2 Go past...</span><span>3 Turn left/right at...</span><span>4 Final location</span>
+        <span>1 Go straight</span><span>2 Go past...</span><span>3 Turn left/right at...</span><span>4 Name the destination</span>
       </div>
     </div>
 
@@ -514,11 +496,13 @@ function evaluateMeaning(text){
  const routeOK=samePath(state.path,mission.path);
  const instructionCount=routeInstructionCount(s);
  const enoughInstructions=instructionCount>=3;
- const locationOK=destinationPresentationOK(s,mission.to);
  const understandable=s.split(/\s+/).filter(Boolean).length>=6&&instructionCount>0;
+ // Location words such as next to / near / opposite / between are accepted,
+ // but they are NOT required for a correct answer.
+ const optionalLocationOK=destinationPresentationOK(s,mission.to);
  return{
-  correct:understandable&&destinationOK&&routeOK&&enoughInstructions&&locationOK,
-  understandable,destinationOK,routeOK,enoughInstructions,locationOK,instructionCount,
+  correct:understandable&&destinationOK&&routeOK&&enoughInstructions,
+  understandable,destinationOK,routeOK,enoughInstructions,optionalLocationOK,instructionCount,
   spokenPath:state.path,expectedPath:mission.path,finalFace:state.face
  };
 }
@@ -757,22 +741,17 @@ function faceAngle(face){return({E:0,S:90,W:180,N:270})[face]??0;}
 function faceName(face){return({E:"EAST",S:"SOUTH",W:"WEST",N:"NORTH"})[face]||face;}
 function setFacing(face,key=null){
  liveDesiredFace=face||liveDesiredFace;
- const a=$("facingArrow"),lab=$("facingLabel");
+ const a=$("facingArrow");
  if(!a||!mission)return;
  const k=key||liveSpokenPath[liveSpokenPath.length-1]||mission.from,pt=walkerAnchor(k);
  a.style.left=pt.x+"%";a.style.top=(pt.y+1.6)+"%";
  a.style.transform=`translate(-50%,-15%) rotate(${faceAngle(liveDesiredFace)}deg)`;
- if(lab){
-  lab.style.left=pt.x+"%";lab.style.top=(pt.y+5.0)+"%";
-  lab.textContent=faceName(liveDesiredFace);
- }
 }
 function initialFace(){return mission&&mission.path.length>1?heading(mission.path[0],mission.path[1]):"E";}
 function setWalkerXY(x,y){
- const w=$("walker"),a=$("facingArrow"),lab=$("facingLabel");
+ const w=$("walker"),a=$("facingArrow");
  if(w){w.style.left=x+"%";w.style.top=y+"%";}
  if(a){a.style.left=x+"%";a.style.top=(y+1.6)+"%";}
- if(lab){lab.style.left=x+"%";lab.style.top=(y+5.0)+"%";}
 }
 function linePointsForPath(path,tempPt=null){
  const pts=(path||[]).map(k=>{const pt=walkerAnchor(k);return `${pt.x},${pt.y}`;});
@@ -857,15 +836,14 @@ function showCorrectMark(){
  const oldBadge=$("correctBadge");if(oldBadge)oldBadge.remove();
  const oldCheck=$("destinationCheck");if(oldCheck)oldCheck.remove();
  const check=document.createElement("div");check.id="destinationCheck";check.className="destinationCheck";check.textContent="✓";check.style.left=dest.x+"%";check.style.top=dest.y+"%";map.appendChild(check);
- const badge=document.createElement("div");badge.id="correctBadge";badge.className="correctBadge";badge.innerHTML=`✅ CORRECT! ${relationLabel(mission.relation?.type||"")}`;map.appendChild(badge);
+ const badge=document.createElement("div");badge.id="correctBadge";badge.className="correctBadge";badge.innerHTML="✅ CORRECT ROUTE!";map.appendChild(badge);
 }
 
 function feedbackFor(ev){
  if(!ev.understandable)return"Try again. Use short, clear direction sentences.";
- if(!ev.enoughInstructions)return"Give at least 3 direction steps before the final location sentence.";
+ if(!ev.enoughInstructions)return"Give at least 3 clear direction steps.";
  if(!ev.routeOK)return"Check the route, turns, and landmarks. The person must really reach the target.";
- if(!ev.destinationOK)return"Remember to name the destination.";
- if(!ev.locationOK)return"Finish with a true location phrase, for example next to, near, opposite, between, or a natural arrival phrase.";
+ if(!ev.destinationOK)return"Remember to name the destination at the end.";
  return"Try the route again.";
 }
 function modelAnswer(){
@@ -876,7 +854,7 @@ function modelAnswer(){
   else if(acts[i]==="right")parts.push(`Turn right at the ${name}.`);
   else parts.push(`Go past the ${name}.`);
  }
- parts.push(relationPhrase());
+ parts.push(`You will see the ${places[mission.to].name}.`);
  return parts.join(" ");
 }
 function askText(){
@@ -901,13 +879,7 @@ function renderMap(routeColor=null,routePath=null,dashed=false){
    const startPt=walkerAnchor(mission.from);
    w.style.left=startPt.x+"%";w.style.top=startPt.y+"%";$("map").appendChild(w);
    const arrow=document.createElement("div");arrow.id="facingArrow";arrow.className="facingArrow";arrow.textContent="➤";$("map").appendChild(arrow);
-   const lab=document.createElement("div");lab.id="facingLabel";lab.className="facingLabel";$("map").appendChild(lab);
    setFacing(initialFace(),mission.from);
-   const start=document.createElement("div");start.className="positionPin startPin";start.textContent="YOU ARE HERE";
-   start.style.left=startPt.x+"%";start.style.top=Math.max(8,startPt.y-7)+"%";$("map").appendChild(start);
-   const target=document.createElement("div");target.className="positionPin targetPin";target.textContent="GO TO: "+places[mission.to].name.toUpperCase();
-   const targetPt=walkerAnchor(mission.to);
-   target.style.left=targetPt.x+"%";target.style.top=Math.max(8,targetPt.y-7)+"%";$("map").appendChild(target);
  }
 }
 function setWalker(key){const pt=walkerAnchor(key);setWalkerXY(pt.x,pt.y);}
@@ -919,7 +891,7 @@ function beginQuestion(){
  currentAttempts=0;currentFirstAttemptScored=false;
  $("qno").textContent=questionIndex+1;$("roundBadge").textContent=`Question ${questionIndex+1}/10`;$("destination").textContent=places[mission.to].name;
  $("question").textContent=askText();$("status").className="status info";
- $("status").textContent=MODE==="pre"?"Speak at least 3 route instructions and finish with a location sentence. Give your best answer once.":"Speak at least 3 route instructions, mention the landmarks, and finish with a location sentence. Keep trying until it is correct.";
+ $("status").textContent=MODE==="pre"?"Give at least 3 clear direction steps and name the destination. Give your best answer once.":"Give at least 3 clear direction steps, use helpful landmarks, and name the destination. Keep trying until the route is correct.";
  $("feedback").className="feedback";$("feedback").textContent="";updateTranscript("—");
  $("replay").disabled=false;$("recordBtn").disabled=!recognition;$("sendBtn").disabled=true;$("recordAgainBtn").disabled=true;$("next").disabled=true;
  idleRecordingUI();renderMap();clearLiveMovement();updateProgress();speakText($("question").textContent);
