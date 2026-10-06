@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teacher Dashboard — Giving Direction</title>
+<style>
+:root{--blue:#1769d2;--green:#128653;--red:#c93636;--ink:#18344e;--muted:#64788b;--line:#d7e5ef}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;background:#f4f9fd;color:var(--ink)}
+.wrap{max-width:1280px;margin:auto;padding:16px}.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+h1{color:#1456bd;margin:0}.nav{display:flex;gap:7px;flex-wrap:wrap}.nav a,.btn{border:0;border-radius:12px;padding:9px 12px;font-weight:850;text-decoration:none;cursor:pointer}
+.nav a{background:#fff;color:#1456bd;border:1px solid var(--line)}.btn{background:#1769d2;color:#fff}.btn.green{background:#158356}.btn.gray{background:#52677b}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:12px}.login{max-width:520px;margin:28px auto;text-align:center}
+input,select{border:1px solid #c9dce8;border-radius:11px;padding:10px;font:inherit}.login input{width:min(330px,100%);margin:8px}
+.status{padding:10px 12px;border:1px solid #bfd9ef;background:#eef7ff;border-radius:12px;margin:10px 0;font-weight:750}.bad{color:#a82c2c}.good{color:#0b7745}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.stat{background:#fff;border:1px solid var(--line);border-radius:15px;padding:10px;text-align:center}.stat small{display:block;color:var(--muted);font-weight:800}.stat b{font-size:23px;color:#174e8e}
+.tabs,.actions,.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.tab{border:0;padding:9px 12px;border-radius:11px;font-weight:850;background:#e9f2f8;color:#50687c;cursor:pointer}.tab.active{background:#1769d2;color:#fff}
+.tableWrap{overflow:auto;border:1px solid #e1eaf0;border-radius:13px;margin-top:10px}table{border-collapse:collapse;width:100%;min-width:1000px;font-size:13px}th,td{border-bottom:1px solid #e8eef3;padding:9px;text-align:left;vertical-align:top}th{background:#f2f7fb;position:sticky;top:0;white-space:nowrap}
+.transcript{min-width:340px;white-space:normal;line-height:1.45}.hidden{display:none!important}.audioSlot{min-width:160px}
+@media(max-width:800px){.stats{grid-template-columns:1fr 1fr}.wrap{padding:9px}}
+</style>
+</head>
+<body><div class="wrap">
+<div class="top"><div><h1>📊 Teacher Dashboard</h1><div style="color:#64788b">Supabase • Transcript • Private Audio Evidence</div></div>
+<div class="nav"><a href="index.html">🏠 Home</a><a href="pretest.html">Pre-test</a><a href="posttest.html">Post-test</a><a href="evidence.html">PA Evidence</a></div></div>
+
+<div id="loginCard" class="card login">
+<h2>เข้าสู่ Dashboard ครู</h2>
+<p>กรอกรหัสสำหรับครูที่ตั้งไว้ใน Supabase Edge Function Secret</p>
+<input id="code" type="password" autocomplete="current-password" placeholder="Teacher access code">
+<br><button id="loginBtn" class="btn">เข้าสู่ Dashboard</button>
+<div id="loginStatus" class="status hidden"></div>
+</div>
+
+<div id="app" class="hidden">
+<div id="status" class="status">กำลังโหลดข้อมูล...</div>
+<div class="actions"><button id="exportBtn" class="btn green">📗 Export Excel</button><button id="reloadBtn" class="btn">↻ Reload</button><button id="logoutBtn" class="btn gray">ออกจาก Dashboard</button></div>
+<div class="stats">
+<div class="stat"><small>Students</small><b id="studentCount">0</b></div>
+<div class="stat"><small>Pre Avg.</small><b id="preAvg">0/10</b></div>
+<div class="stat"><small>Post Avg.</small><b id="postAvg">0/10</b></div>
+<div class="stat"><small>Avg. Gain</small><b id="gainAvg">0</b></div>
+<div class="stat"><small>Speech Attempts</small><b id="attemptCount">0</b></div>
+</div>
+<div class="card">
+<div class="tabs"><button class="tab active" data-tab="summary">Summary</button><button class="tab" data-tab="attempts">Speech Attempts + Audio</button></div>
+<div id="summaryPanel"><div class="tableWrap"><table><thead><tr><th>เลขที่</th><th>ชื่อ</th><th>ชั้น</th><th>Pre</th><th>Post</th><th>Gain</th><th>Attempts</th><th>Hints</th><th>อัปเดต</th></tr></thead><tbody id="summaryBody"></tbody></table></div></div>
+<div id="attemptPanel" class="hidden">
+<div class="filters" style="margin-top:10px"><input id="search" placeholder="ค้นหาเลขที่/ชื่อ"><select id="testFilter"><option value="">ทุก Test</option><option value="pre">Pre</option><option value="post">Post</option></select></div>
+<div class="tableWrap"><table><thead><tr><th>เลขที่</th><th>ชื่อ</th><th>ชั้น</th><th>Test</th><th>ข้อ</th><th>Attempt</th><th>ผล</th><th>Transcript</th><th>เสียง</th><th>เวลา</th></tr></thead><tbody id="attemptBody"></tbody></table></div>
+</div>
+</div></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script type="module">
+import { SUPABASE_GATEWAY_URL } from "./supabase-config.js";
+const $=id=>document.getElementById(id);let code=sessionStorage.getItem("teacherCode")||"",submissions=[],attempts=[],summary=[];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+const noVal=v=>{const n=parseInt(String(v||"").replace(/\D/g,""),10);return Number.isFinite(n)?n:999999};
+async function call(action,extra={}){
+ const r=await fetch(SUPABASE_GATEWAY_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({role:"teacher",code,action,...extra})});
+ const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(j.error||`HTTP ${r.status}`);return j;
+}
+function latestRows(){
+ const m=new Map();[...submissions].sort((a,b)=>new Date(a.created_at)-new Date(b.created_at)).forEach(r=>{
+  const k=`${r.class_name}|${r.student_no}`;if(!m.has(k))m.set(k,{no:r.student_no,name:r.student_name,cls:r.class_name,pre:null,post:null,last:""});
+  const x=m.get(k);x.name=r.student_name||x.name;x.last=r.created_at;if(r.test_type==="pre")x.pre=r;else if(r.test_type==="post")x.post=r;
+ });return [...m.values()].sort((a,b)=>noVal(a.no)-noVal(b.no)||a.name.localeCompare(b.name,"th"));
+}
+function render(){
+ summary=latestRows();$("studentCount").textContent=summary.length;$("attemptCount").textContent=attempts.length;
+ const pr=summary.filter(x=>x.pre),po=summary.filter(x=>x.post),pa=summary.filter(x=>x.pre&&x.post);
+ const pre=pr.length?pr.reduce((s,x)=>s+Number(x.pre.score||0),0)/pr.length:0,post=po.length?po.reduce((s,x)=>s+Number(x.post.score||0),0)/po.length:0,gain=pa.length?pa.reduce((s,x)=>s+Number(x.post.score||0)-Number(x.pre.score||0),0)/pa.length:0;
+ $("preAvg").textContent=pre.toFixed(2)+"/10";$("postAvg").textContent=post.toFixed(2)+"/10";$("gainAvg").textContent=(gain>=0?"+":"")+gain.toFixed(2);
+ $("summaryBody").innerHTML=summary.length?summary.map(x=>{const a=x.pre?.score??null,b=x.post?.score??null,g=a!=null&&b!=null?b-a:null;return `<tr><td>${esc(x.no)}</td><td>${esc(x.name)}</td><td>${esc(x.cls)}</td><td>${a==null?"—":a+"/10"}</td><td>${b==null?"—":b+"/10"}</td><td>${g==null?"—":(g>=0?"+":"")+g}</td><td>${x.post?.attempts??x.pre?.attempts??"—"}</td><td>${x.post?.hints??x.pre?.hints??"—"}</td><td>${x.last?new Date(x.last).toLocaleString("th-TH"):"—"}</td></tr>`}).join(""):`<tr><td colspan="9">ยังไม่มีข้อมูล</td></tr>`;
+ renderAttempts();
+}
+function filtered(){
+ const q=$("search").value.trim().toLowerCase(),t=$("testFilter").value;
+ return attempts.filter(a=>(!q||`${a.student_no} ${a.student_name} ${a.class_name}`.toLowerCase().includes(q))&&(!t||a.test_type===t)).sort((a,b)=>noVal(a.student_no)-noVal(b.student_no)||a.question_no-b.question_no||a.attempt_no-b.attempt_no);
+}
+function renderAttempts(){
+ const rows=filtered();$("attemptBody").innerHTML=rows.length?rows.map(a=>`<tr><td>${esc(a.student_no)}</td><td>${esc(a.student_name)}</td><td>${esc(a.class_name)}</td><td>${a.test_type}</td><td>${a.question_no}</td><td>${a.attempt_no}</td><td class="${a.correct?"good":"bad"}">${a.correct?"✓ ถูก":"✗ ผิด"}</td><td class="transcript">${esc(a.transcript)||"—"}</td><td class="audioSlot">${a.audio_path?`<button class="btn playBtn" data-path="${esc(a.audio_path)}">▶ ฟัง</button>`:"—"}</td><td>${new Date(a.created_at).toLocaleString("th-TH")}</td></tr>`).join(""):`<tr><td colspan="10">ไม่มีข้อมูล</td></tr>`;
+ document.querySelectorAll(".playBtn").forEach(b=>b.onclick=()=>playAudio(b));
+}
+async function playAudio(btn){
+ btn.disabled=true;const old=btn.textContent;btn.textContent="กำลังโหลด...";
+ try{const j=await call("audio",{path:btn.dataset.path});const audio=document.createElement("audio");audio.controls=true;audio.autoplay=true;audio.src=j.url;btn.replaceWith(audio);}
+ catch(e){btn.disabled=false;btn.textContent=old;alert("เปิดเสียงไม่ได้: "+e.message)}
+}
+async function load(){
+ $("status").textContent="กำลังโหลดข้อมูล...";
+ try{const j=await call("data");submissions=j.submissions||[];attempts=j.attempts||[];$("status").textContent=`✅ โหลดแล้ว ${submissions.length} ผลทดสอบ • ${attempts.length} speech attempts`;render();}
+ catch(e){$("status").textContent="❌ "+e.message}
+}
+async function login(){
+ code=$("code").value.trim();if(!code)return;
+ try{await call("verify");sessionStorage.setItem("teacherCode",code);$("loginCard").classList.add("hidden");$("app").classList.remove("hidden");load();}
+ catch(e){$("loginStatus").classList.remove("hidden");$("loginStatus").textContent="รหัสไม่ถูกต้องหรือ Edge Function ยังไม่ได้ Deploy"}
+}
+function exportXlsx(){
+ const s=summary.map(x=>({"เลขที่":x.no,"ชื่อ":x.name,"ชั้น":x.cls,"Pre":x.pre?.score??"","Post":x.post?.score??"","Gain":x.pre&&x.post?Number(x.post.score)-Number(x.pre.score):"","Attempts":x.post?.attempts??"","Hints":x.post?.hints??""}));
+ const a=attempts.map(x=>({"เลขที่":x.student_no,"ชื่อ":x.student_name,"ชั้น":x.class_name,"Test":x.test_type,"ข้อ":x.question_no,"Attempt":x.attempt_no,"Correct":x.correct?"Yes":"No","Transcript":x.transcript,"Audio Path":x.audio_path||"","เวลา":x.created_at}));
+ const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(s),"Summary");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(a),"Speech Attempts");XLSX.writeFile(wb,"Giving_Direction_PA_Results.xlsx");
+}
+$("loginBtn").onclick=login;$("reloadBtn").onclick=load;$("logoutBtn").onclick=()=>{sessionStorage.removeItem("teacherCode");location.reload()};$("exportBtn").onclick=exportXlsx;$("search").oninput=renderAttempts;$("testFilter").onchange=renderAttempts;
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));$("summaryPanel").classList.toggle("hidden",b.dataset.tab!=="summary");$("attemptPanel").classList.toggle("hidden",b.dataset.tab!=="attempts")});
+if(code){$("code").value=code;login()}
+</script></body></html>

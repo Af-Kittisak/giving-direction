@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1769d2">
+<title>Giving Direction M.2 — Supabase Edition</title>
+<style>
+:root{--blue:#1769d2;--green:#16a34a;--ink:#17324d;--muted:#60758a;--line:#cfe1ef}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;color:var(--ink);background:linear-gradient(180deg,#bfe9ff,#f7fbff);min-height:100vh}
+.wrap{max-width:1050px;margin:auto;padding:22px 14px 40px}.hero{text-align:center;padding:28px 10px}.logo{width:76px;height:76px;margin:auto;border-radius:24px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;font-size:42px}
+h1{font-size:clamp(31px,6vw,54px);color:#114fa8;margin:13px 0 6px}.sub{color:var(--muted);font-weight:800}.badges{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin-top:12px}.badge{background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:850}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}.card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:18px;display:flex;flex-direction:column;min-height:260px;box-shadow:0 12px 28px #285f8c14}.icon{font-size:42px}.card h2{color:#1456bd;margin:8px 0 5px}.card p{color:var(--muted);line-height:1.55}.spacer{flex:1}.btn{display:block;text-align:center;text-decoration:none;color:#fff;background:#1769d2;padding:12px;border-radius:14px;font-weight:950;box-shadow:0 5px 0 #0c438f}.btn.green{background:#16965f;box-shadow:0 5px 0 #0a6d41}.btn.dark{background:#3c5268;box-shadow:0 5px 0 #243546}
+.note{margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px;color:#536a7d;font-size:13px;line-height:1.55}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.card{min-height:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="hero">
+<div class="logo">🧭</div>
+<h1>Giving Direction</h1>
+<div class="sub">M.2 Speaking Assessment • Directions + Location Words • Supabase Character Walk Edition</div>
+<div class="badges"><span class="badge">📱 Multi-device</span><span class="badge">☁️ Supabase</span><span class="badge">🎙️ Speech-to-Text</span><span class="badge">📊 Live Dashboard + Transcript</span></div>
+<article class="card"><div class="icon">🎓</div><h2>PA Evidence</h2><p>หน้าหลักฐานสำหรับกรรมการ แบบ Read-only ดู Pre/Post, Transcript และฟังเสียงนักเรียน</p><div class="spacer"></div><a class="btn" href="evidence.html">เปิด PA Evidence</a></article>
+</section>
+<div class="note"><b>Character-only movement:</b> no route trail is drawn on the map. Students watch the character and its facing arrow move from point to point.</div>
+<div class="note"><b>Complex speaking missions:</b> each route now requires at least 3 route instructions plus a final location sentence using next to, near, opposite, or between.</div>
+<div class="note"><b>New language focus:</b> next to • near • opposite • between — used together with route directions.</div>
+<section class="grid">
+<article class="card"><div class="icon">📝</div><h2>Pre-test</h2><p>วัดความสามารถก่อนเรียน 10 ข้อ นักเรียนส่งคำตอบแต่ละข้อและไปข้อต่อไปได้แม้ยังตอบไม่ถูก</p><div class="spacer"></div><a class="btn" href="pretest.html">เริ่ม Pre-test</a></article>
+<article class="card"><div class="icon">🎯</div><h2>Post-test</h2><p>แบบทดสอบหลังเรียน 10 ข้อ ฝึกจนบอกเส้นทางถูกต้อง มี Hint และบันทึก First-attempt score, Attempts และ Hints</p><div class="spacer"></div><a class="btn green" href="posttest.html">เริ่ม Post-test</a></article>
+<article class="card"><div class="icon">📊</div><h2>Teacher Dashboard</h2><p>ครูเข้าสู่ระบบด้วย Google เพื่อดูคะแนนและประโยคที่นักเรียนพูดทุกครั้งที่กด Send Answer</p><div class="spacer"></div><a class="btn dark" href="dashboard.html">เปิด Dashboard</a></article>
+</section>
+<div class="note"><b>ก่อนใช้งาน:</b> แก้ไขอีเมลครูในไฟล์ <b>public/firebase-config.js</b> และเปิด Google Sign-in ใน Firebase Authentication สำหรับ Dashboard ครู</div>
+</div>
+</body>
+</html>
