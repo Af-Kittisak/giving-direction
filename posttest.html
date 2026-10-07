@@ -899,12 +899,7 @@ function showHint(){
 }
 function askText(){
  const d=places[mission.to].name;
- const forms=[
-  `Excuse me, how can I get to the ${d}?`,
-  `Excuse me, could you tell me how to get to the ${d}?`,
-  `Excuse me, which way is the ${d}?`
- ];
- return forms[questionIndex%forms.length];
+ return `Excuse me, how can I get to the ${d}?`;
 }
 function speakText(text){
  if(!("speechSynthesis"in window))return;
